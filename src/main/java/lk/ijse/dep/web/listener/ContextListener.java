@@ -50,7 +50,7 @@ public class ContextListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        HibernateUtil.getSessionFactory().close();
+        JpaUtil.getEntityManagerFactory().close();
         logger.info("Session factory is being shut down");
     }
 }
