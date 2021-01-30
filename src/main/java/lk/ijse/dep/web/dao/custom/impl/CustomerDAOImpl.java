@@ -10,7 +10,6 @@ public class CustomerDAOImpl extends CrudDAOImpl<Customer, String> implements Cu
 
     @Override
     public List<Customer> searchCustomersByName(String name) throws Exception {
-        return getSession().createQuery("FROM Customer c WHERE c.name LIKE ?1")
-                .setParameter(1, name + "%").list();
+        return null;
     }
 }
