@@ -30,7 +30,7 @@ public class ContextListener implements ServletContextListener {
         try {
             logger.info("Session factory is being initialized");
             EntityManagerFactory entityManagerFactory = JpaUtil.getEntityManagerFactory();
-            sce.getServletContext().setAttribute("emf", entityManagerFactory);
+            sce.getServletContext().setAttribute("sf", entityManagerFactory);
 
             String logFilePath;
             if (prop.getProperty("app.log_dir") != null) {
