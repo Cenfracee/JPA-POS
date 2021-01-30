@@ -52,7 +52,7 @@ public class CustomerServlet extends HttpServlet {
 
             CustomerBO customerBO = BOFactory.getInstance().getBO(BOTypes.CUSTOMER);
             customerBO.setEntityManager(entityManager);
-            resp.setStatus(HttpServletResponse.SC_NO_CONTENT)
+            resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -62,9 +62,9 @@ public class CustomerServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        final SessionFactory sf = (SessionFactory) getServletContext().getAttribute("sf");
+        final EntityManagerFactory entityManagerFactory = (EntityManagerFactory) getServletContext().getAttribute("sf");
 
-        try (Session session = sf.openSession()) {
+        try {EntityManager entityManager = entityManagerFactory.createEntityManager();
 
             if (req.getPathInfo() == null || req.getPathInfo().replace("/", "").trim().isEmpty()) {
                 throw new HttpResponseException(400, "Invalid customer id", null);
@@ -79,7 +79,7 @@ public class CustomerServlet extends HttpServlet {
             }
 
             CustomerBO customerBO = BOFactory.getInstance().getBO(BOTypes.CUSTOMER);
-            customerBO.setSession(session);
+            customerBO.setEntityManager(entityManager);
             customerBO.updateCustomer(dto);
             resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
 
@@ -94,12 +94,12 @@ public class CustomerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Jsonb jsonb = JsonbBuilder.create();
 
-        final SessionFactory sf = (SessionFactory) getServletContext().getAttribute("sf");
+        final EntityManagerFactory entityManagerFactory = (EntityManagerFactory) getServletContext().getAttribute("sf");
 
-        try (Session session = sf.openSession()) {
+        try  {EntityManager entityManager = entityManagerFactory.createEntityManager();
             resp.setContentType("application/json");
             CustomerBO customerBO = BOFactory.getInstance().getBO(BOTypes.CUSTOMER);
-            customerBO.setSession(session);
+            customerBO.setEntityManager(entityManager);
             resp.getWriter().println(jsonb.toJson(customerBO.findAllCustomers()));
 
         } catch (Throwable t) {
@@ -110,9 +110,9 @@ public class CustomerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Jsonb jsonb = JsonbBuilder.create();
-        final SessionFactory sf = (SessionFactory) getServletContext().getAttribute("sf");
+        final EntityManagerFactory entityManagerFactory = (EntityManagerFactory) getServletContext().getAttribute("sf");
 
-        try (Session session = sf.openSession()) {
+        try {EntityManager entityManager = entityManagerFactory.createEntityManager();
             CustomerDTO dto = jsonb.fromJson(req.getReader(), CustomerDTO.class);
 
             if (dto.getId() == null || dto.getId().trim().isEmpty() || dto.getName() == null || dto.getName().trim().isEmpty() || dto.getAddress() == null || dto.getAddress().trim().isEmpty()) {
@@ -120,7 +120,7 @@ public class CustomerServlet extends HttpServlet {
             }
 
             CustomerBO customerBO = BOFactory.getInstance().getBO(BOTypes.CUSTOMER);
-            customerBO.setSession(session);
+            customerBO.setEntityManager(entityManager);
             customerBO.saveCustomer(dto);
             resp.setStatus(HttpServletResponse.SC_CREATED);
             resp.setContentType("application/json");
