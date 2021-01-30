@@ -11,8 +11,9 @@ import lk.ijse.dep.web.dto.OrderDTO;
 import lk.ijse.dep.web.entity.Item;
 import lk.ijse.dep.web.entity.Order;
 import lk.ijse.dep.web.entity.OrderDetail;
-import org.hibernate.Session;
 
+import javax.persistence.EntityManager;
+import java.sql.Connection;
 import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,30 +24,27 @@ public class OrderBOImpl implements OrderBO {
     private OrderDetailDAO orderDetailDAO;
     private ItemDAO itemDAO;
     private CustomerDAO customerDAO;
-    private Session session;
+    private EntityManager entityManager;
 
     public OrderBOImpl() {
         orderDAO = DAOFactory.getInstance().getDAO(DAOTypes.ORDER);
         orderDetailDAO = DAOFactory.getInstance().getDAO(DAOTypes.ORDER_DETAIL);
         itemDAO = DAOFactory.getInstance().getDAO(DAOTypes.ITEM);
-        customerDAO = DAOFactory.getInstance().getDAO(DAOTypes.CUSTOMER);
     }
 
     @Override
-    public void setSession(Session session) throws Exception {
-        this.session = session;
-        orderDAO.setSession(session);
-        itemDAO.setSession(session);
-        orderDAO.setSession(session);
-        customerDAO.setSession(session);
+    public void setEntityManager(EntityManager entityManager) throws Exception {
+        this.entityManager = entityManager;
+        orderDAO.setEntityManager(entityManager);
+        orderDetailDAO.setEntityManager(entityManager);
+        itemDAO.setEntityManager(entityManager);
+        customerDAO.setEntityManager(entityManager);
     }
 
     @Override
     public void placeOrder(OrderDTO dto) throws Exception {
-        session.beginTransaction();
+        entityManager.getTransaction().begin();
         try {
-            boolean result = false;
-
             /* 1. Saving the order */
             orderDAO.save(new Order(dto.getOrderId(), Date.valueOf(dto.getOrderDate()), customerDAO.get(dto.getCustomerId())));
 
@@ -64,13 +62,12 @@ public class OrderBOImpl implements OrderBO {
                 }
                 item.setQtyOnHand(item.getQtyOnHand() - orderDetail.getQty());
                 itemDAO.update(item);
-
             }
 
-            session.getTransaction().commit();
+            entityManager.getTransaction().commit();
 
-        } catch (Throwable t) {
-            session.getTransaction().rollback();
+        }catch (Throwable t){
+            entityManager.getTransaction().rollback();
             throw t;
         }
     }
