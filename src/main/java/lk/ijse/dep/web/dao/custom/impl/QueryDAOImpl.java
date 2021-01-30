@@ -4,6 +4,7 @@ import lk.ijse.dep.web.dao.custom.QueryDAO;
 import lk.ijse.dep.web.entity.CustomEntity;
 import org.hibernate.Session;
 
+import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -14,10 +15,6 @@ public class QueryDAOImpl implements QueryDAO {
 
     private Session session;
 
-    @Override
-    public void setSession(Session session) throws Exception {
-        this.session = session;
-    }
 
     @Override
     public List<CustomEntity> getOrderInfo(String customerId) throws Exception {
@@ -55,5 +52,10 @@ public class QueryDAOImpl implements QueryDAO {
 //                    rst.getBigDecimal(5)));
 //        }
 //        return orders;
+    }
+
+    @Override
+    public void setEntityManager(EntityManager entityManager) throws Exception {
+
     }
 }

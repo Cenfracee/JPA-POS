@@ -30,7 +30,7 @@ public class CustomerServlet extends HttpServlet {
     final Logger logger = LoggerFactory.getLogger(CustomerServlet.class);
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             super.service(req, resp);
         } catch (Throwable t) {

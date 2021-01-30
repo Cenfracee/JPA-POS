@@ -5,7 +5,7 @@ import org.hibernate.cfg.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.activation.DataSource;
+import javax.sql.DataSource;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.io.IOException;
@@ -45,12 +45,12 @@ public class JpaUtil {
             basicDataSource = new BasicDataSource();
             basicDataSource.setInitialSize(5);
             basicDataSource.setMaxTotal(10);
-            basicDataSource.setDriverClassName(properties.getProperty("dbcp.connection.driver.class"));
+            basicDataSource.setDriverClassName(properties.getProperty("dbcp.connection.driver_class"));
             basicDataSource.setUrl(properties.getProperty("dbcp.connection.url"));
             basicDataSource.setUsername(properties.getProperty("dbcp.connection.username"));
             basicDataSource.setPassword(properties.getProperty("dbcp.connection.password"));
 
-            return (DataSource) basicDataSource;
+            return basicDataSource;
         } catch (IOException e) {
 //            e.printStackTrace();
             logger.warn("Error occurred in Connection settings");
