@@ -12,6 +12,8 @@ import org.hibernate.SessionFactory;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -35,9 +37,10 @@ public class OrderServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Jsonb jsonb = JsonbBuilder.create();
-        final SessionFactory sf = (SessionFactory) getServletContext().getAttribute("sf");
+        final EntityManagerFactory entityManagerFactory = (EntityManagerFactory) getServletContext().getAttribute("sf");
 
-        try (Session session = sf.openSession()) {
+
+        try {EntityManager entityManager = entityManagerFactory.createEntityManager();
             OrderDTO dto = jsonb.fromJson(req.getReader(), OrderDTO.class);
 
             if (dto.getOrderId() == null || dto.getOrderId().trim().isEmpty() || dto.getOrderDate() == null || dto.getOrderDetails().isEmpty()) {
@@ -45,7 +48,7 @@ public class OrderServlet extends HttpServlet {
             }
 
             OrderBO orderBO = BOFactory.getInstance().getBO(BOTypes.ORDER);
-            orderBO.setSession(session);
+            orderBO.setEntityManager(entityManager);
             orderBO.placeOrder(dto);
             resp.setStatus(HttpServletResponse.SC_CREATED);
         } catch (SQLIntegrityConstraintViolationException exp) {
