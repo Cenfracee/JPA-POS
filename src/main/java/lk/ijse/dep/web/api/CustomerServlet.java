@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -38,9 +40,9 @@ public class CustomerServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        final SessionFactory sf = (SessionFactory) getServletContext().getAttribute("sf");
+        final EntityManagerFactory entityManagerFactory = (EntityManagerFactory) getServletContext().getAttribute("sf");
 
-        try (Session session = sf.openSession()) {
+        try {EntityManager entityManager = entityManagerFactory.createEntityManager();
 
             if (req.getPathInfo() == null || req.getPathInfo().replace("/", "").trim().isEmpty()) {
                 throw new HttpResponseException(400, "Invalid customer id", null);
@@ -49,8 +51,8 @@ public class CustomerServlet extends HttpServlet {
             String id = req.getPathInfo().replace("/", "");
 
             CustomerBO customerBO = BOFactory.getInstance().getBO(BOTypes.CUSTOMER);
-            customerBO.setSession(session);
-            resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            customerBO.setEntityManager(entityManager);
+            resp.setStatus(HttpServletResponse.SC_NO_CONTENT)
 
         } catch (Exception e) {
             throw new RuntimeException(e);
